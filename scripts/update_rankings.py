@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -28,6 +29,12 @@ def number(value):
 
 def main():
     previous = json.loads(DATA_FILE.read_text(encoding="utf-8")) if DATA_FILE.exists() else {"stages":[]}
+    if os.getenv("GITHUB_EVENT_NAME") == "schedule" and previous.get("checkedAt"):
+        china_time = timezone(timedelta(hours=8))
+        previous_hour = datetime.fromisoformat(previous["checkedAt"]).astimezone(china_time).strftime("%Y-%m-%dT%H")
+        current_hour = datetime.now(china_time).strftime("%Y-%m-%dT%H")
+        if previous_hour == current_hour:
+            return
     old = {item["stage"]: item for item in previous.get("stages", [])}
     metadata = post({"type":"JSJD","bdId":BOARD_ID,"stbh":QUESTION_ID}) or {}
     releases = metadata.get("jsbdList") or []
