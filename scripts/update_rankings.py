@@ -34,6 +34,7 @@ def main():
     published = releases[0].get("ZXFBSJ_") if releases else None
     source_time = published.replace(" ", "T") + "+08:00" if published else None
     stages = []
+    has_valid_update = False
     for stage in STAGES:
         rows = post({"pageNo":0,"pageSize":1000,"type":"JSDF","rwId":TASK_ID,"stbh":QUESTION_ID,"jd":stage}) or []
         valid = [row for row in rows if number(row.get("XH_")) is not None and number(row.get("FS_")) is not None]
@@ -41,16 +42,25 @@ def main():
         current_rank = number(team_row.get("XH_")) if team_row else None
         current_score = number(team_row.get("FS_")) if team_row else None
         prior = old.get(stage, {})
+        is_valid = current_rank is not None and current_score is not None
+        if is_valid:
+            has_valid_update = True
+            current_total = len(valid)
+        else:
+            current_rank = prior.get("currentRank")
+            current_total = prior.get("currentTotal")
+            current_score = prior.get("currentScore")
         best_rank = prior.get("bestRank")
         best_total = prior.get("bestTotal")
-        if current_rank is not None and (best_rank is None or current_rank < best_rank):
-            best_rank, best_total = current_rank, len(valid)
+        if is_valid and (best_rank is None or current_rank < best_rank):
+            best_rank, best_total = current_rank, current_total
         best_score = prior.get("bestScore")
-        if current_score is not None and (best_score is None or current_score > best_score):
+        if is_valid and (best_score is None or current_score > best_score):
             best_score = current_score
-        stages.append({"stage":stage,"currentRank":current_rank,"currentTotal":len(valid) if current_rank is not None else None,"currentScore":current_score,"bestRank":best_rank,"bestTotal":best_total,"bestScore":best_score})
-    now = datetime.now(timezone(timedelta(hours=8))).isoformat(timespec="seconds")
-    DATA_FILE.write_text(json.dumps({"team":TEAM,"checkedAt":now,"sourcePublishedAt":source_time,"stages":stages}, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+        stages.append({"stage":stage,"currentRank":current_rank,"currentTotal":current_total,"currentScore":current_score,"bestRank":best_rank,"bestTotal":best_total,"bestScore":best_score})
+    checked_at = datetime.now(timezone(timedelta(hours=8))).isoformat(timespec="seconds") if has_valid_update else previous.get("checkedAt")
+    effective_source_time = source_time if has_valid_update else previous.get("sourcePublishedAt")
+    DATA_FILE.write_text(json.dumps({"team":TEAM,"checkedAt":checked_at,"sourcePublishedAt":effective_source_time,"stages":stages}, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
 
 if __name__ == "__main__":
     main()
