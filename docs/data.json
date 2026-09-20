@@ -1,12 +1,12 @@
 {
   "team": "Overfit",
-  "checkedAt": "2026-09-20T14:09:09+08:00",
+  "checkedAt": "2026-09-20T15:00:31+08:00",
   "sourcePublishedAt": null,
   "stages": [
     {
       "stage": "初赛",
-      "currentRank": 37,
-      "currentTotal": 183,
+      "currentRank": 36,
+      "currentTotal": 168,
       "currentScore": 72.5296,
       "bestRank": 27,
       "bestTotal": 151,
