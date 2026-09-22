@@ -1,6 +1,6 @@
 {
   "team": "Overfit",
-  "checkedAt": "2026-09-22T12:46:00+08:00",
+  "checkedAt": "2026-09-22T13:22:42+08:00",
   "sourcePublishedAt": null,
   "stages": [
     {
@@ -14,12 +14,12 @@
     },
     {
       "stage": "复赛",
-      "currentRank": null,
-      "currentTotal": null,
-      "currentScore": null,
-      "bestRank": null,
-      "bestTotal": null,
-      "bestScore": null
+      "currentRank": 5,
+      "currentTotal": 49,
+      "currentScore": 78.5989,
+      "bestRank": 5,
+      "bestTotal": 49,
+      "bestScore": 78.5989
     },
     {
       "stage": "决赛",
